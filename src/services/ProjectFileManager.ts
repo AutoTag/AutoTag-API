@@ -343,7 +343,7 @@ export default class ProjectFileManagerService {
     }
 
     // Set the project's Tags Location
-    project.projectDataLoc = FILE_TAGS;
+    project.tagsLoc = FILE_TAGS;
 
 
     // Upload Default Pre-Tags File
@@ -357,7 +357,7 @@ export default class ProjectFileManagerService {
     }
 
     // Set the project's Pre-Tags Location
-    project.projectDataLoc = FILE_PRETAGS;
+    project.silverStandardLoc = FILE_PRETAGS;
 
     return project;
   }
