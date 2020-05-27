@@ -63,7 +63,7 @@ projectRouter.post('/project', async function (req: Request, res: Response, next
   console.log(`${(req as any).user.name} ': Create New Project.`);
   console.log(req.body);
 
-  if(!req.body.tags || !req.body.type || !req.body.projectDataFormat || !req.body.name || !req.body.description){
+  if(req.body.tags == undefined || req.body.type == undefined || req.body.projectDataFormat == undefined || req.body.name == undefined || req.body.description == undefined){
     res.statusMessage = 'Missing fields in request body. Required Fields: [name, description, type, projectDataFormat, tags]';
     return res.status(400).end();
   }
@@ -76,7 +76,7 @@ projectRouter.post('/project', async function (req: Request, res: Response, next
     const tags_repository = await getRepository(Tag);
     for (const tag in req.body.tags) {
       const newTag = new Tag();
-      newTag.tag = req.body.projectTags[tag];
+      newTag.tag = req.body.tags[tag];
       await tags_repository.save(newTag);
       projectTags.push(newTag);
     }

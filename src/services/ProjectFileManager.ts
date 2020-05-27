@@ -641,7 +641,7 @@ export default class ProjectFileManagerService {
       else{
         numTaggedRows++;
       }
-    })
+    });
     
     // Update Project Status
     project.lastUpdate = new Date();
