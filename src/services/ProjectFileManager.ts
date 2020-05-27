@@ -588,15 +588,19 @@ export default class ProjectFileManagerService {
    * Returns updated Project Object
    */
   public async UpdateTag(project : Project, rowId : number, tag : string) : Promise<Project> {
+    if(rowId < 0 || rowId > project.numTotalRows){
+      console.error(`'rowId=${rowId}' is out of bounds for total data limit of 'project.numTotalRows=${project.numTotalRows}'.`);
+      return null;
+    }
+    
     let awsClientInstance = Container.get(AWSAccessorService);
-    let dataRows : DataRow[] = [];
 
     // Project Root Path
     const projectDir = `${project.owner.id}/${project.uuid}/`;
     
     // Get Tags File
     const tagsFilePath : string = projectDir + project.tagsLoc;
-    let dataTags = await awsClientInstance.downloadFileAsList(tagsFilePath);
+    let dataTags : string[] = await awsClientInstance.downloadFileAsList(tagsFilePath);
 
     // DELETE
     console.log(dataTags);

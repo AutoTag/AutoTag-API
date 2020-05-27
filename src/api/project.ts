@@ -189,6 +189,9 @@ projectRouter.get('/project/:uuid/dataBatch', async function (req: Request, res:
 });
 
 projectRouter.post('/project/:uuid/dataTag', async function (req: Request, res: Response, next: NextFunction) {
+  console.log(`${(req as any).user.name} ': Update DataTag - Project 'uuid=${req.params.uuid}'.`);
+  console.log(req.body);
+
   try {
     const projectFileManagerInstance = Container.get(ProjectFileManagerService);
     const repository = await getRepository(Project);
@@ -199,7 +202,7 @@ projectRouter.post('/project/:uuid/dataTag', async function (req: Request, res: 
           uuid: req.params.uuid,
       },
     });
-    const rowId : number = req.body.row;
+    const rowId : number = req.body.rowId;
     const tag : string = req.body.tag;
 
     const result = await projectFileManagerInstance.UpdateTag(project, rowId, tag);
