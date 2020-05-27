@@ -77,14 +77,13 @@ export default class AWSAccessorService {
 
     this.s3Client.upload(s3Params, (err, data) => {
       if (err) {
-        console.log(err);
-        // TODO: Log error.
+        console.error(err);
+        
         return false;
       }
     });
 
-    // TODO: Log success.
-
+    console.log(`Success Uploading Buffer to ${fileDest}.`);
     return true;
   }
 
@@ -185,6 +184,10 @@ export default class AWSAccessorService {
 
       // TODO: Validate File Contents are Parsed Correctly.
       fileContent = stream.toString();
+    })
+    .catch(err => {
+      console.error(err);
+      return null;
     });
 
     // TODO: Log Success.
@@ -213,6 +216,10 @@ export default class AWSAccessorService {
       // TODO: Validate File Contents are Parsed Correctly.
       // TODO: Make this more efficient by reading directly from the stream ffs...
       fileContent = stream.toString().split(/(?:\r\n|\r|\n)/g);
+    })
+    .catch(err => {
+      console.error(err);
+      return null;
     });
 
     // TODO: Log Success.

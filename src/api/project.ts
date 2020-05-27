@@ -24,7 +24,8 @@ projectRouter.get('/project', async function (req: Request, res: Response, next:
       },
     });
     console.log(allProjects);
-    res.send(allProjects);
+
+    return res.status(200).send(allProjects);
   }
   catch (err) {
     return next(err);
@@ -32,6 +33,8 @@ projectRouter.get('/project', async function (req: Request, res: Response, next:
 });
 
 projectRouter.get('/project/:uuid', async function (req: Request, res: Response, next: NextFunction) {
+  console.log(`${(req as any).user.name} ': Get Project 'uuid=${req.params.uuid}'.`);
+
   try {
     const repository = await getRepository(Project);
     const project = await repository.findOne({ 
@@ -41,8 +44,15 @@ projectRouter.get('/project/:uuid', async function (req: Request, res: Response,
           uuid: req.params.uuid,
       },
     });
-    console.log((req as any).user.email + ': Get project ' + req.params.uuid);
-    res.send(project);
+
+    if(!project){
+      res.statusMessage = `Project with 'uuid=${req.params.uuid}' Not Found.`;
+      return res.status(404).end();
+    }
+
+    console.log(project);
+
+    return res.status(200).send(project);
   }
   catch (err) {
     return next(err);
@@ -50,18 +60,25 @@ projectRouter.get('/project/:uuid', async function (req: Request, res: Response,
 });
 
 projectRouter.post('/project', async function (req: Request, res: Response, next: NextFunction) {
+  console.log(`${(req as any).user.name} ': Create New Project.`);
+  console.log(req.body);
+
+  if(!req.body.tags || !req.body.type || !req.body.projectDataFormat || !req.body.name || !req.body.description){
+    res.statusMessage = 'Missing fields in request body. Required Fields: [name, description, type, projectDataFormat, tags]';
+    return res.status(400).end();
+  }
+
   const projectFileManagerInstance = Container.get(ProjectFileManagerService);
 
-  console.log(req.body);
   try {
     // Initialize Tags
-    const tags : Tag[] = [];
+    const projectTags : Tag[] = [];
     const tags_repository = await getRepository(Tag);
     for (const tag in req.body.tags) {
       const newTag = new Tag();
-      newTag.tag = req.body.tags[tag];
+      newTag.tag = req.body.projectTags[tag];
       await tags_repository.save(newTag);
-      tags.push(newTag);
+      projectTags.push(newTag);
     }
 
     const repository = await getRepository(Project);
@@ -71,7 +88,7 @@ projectRouter.post('/project', async function (req: Request, res: Response, next
     const projectDataFormat : DataFormat = req.body.projectDataFormat;
 
     // Initialize Project
-    const project = projectFileManagerInstance.InitializeProject(req.body.name, owner, req.body.description, projectType, projectDataFormat, tags);
+    const project = projectFileManagerInstance.InitializeProject(req.body.name, owner, req.body.description, projectType, projectDataFormat, projectTags);
     await repository.save(project);
 
     // Add Files to Project
@@ -110,6 +127,8 @@ projectRouter.post('/project/:uuid', async function (req: Request, res: Response
 });
 
 projectRouter.delete('/project/:uuid', async function (req: Request, res: Response, next: NextFunction) {
+  console.log(`${(req as any).user.name} ': Delete Project`);
+
   try {
     const projectFileManagerInstance = Container.get(ProjectFileManagerService);
     const repository = await getRepository(Project);
@@ -121,6 +140,12 @@ projectRouter.delete('/project/:uuid', async function (req: Request, res: Respon
       },
     });
 
+    if(!project){
+      return res.status(404).send({
+        message : `Project with 'uuid=${req.params.uuid}' Not Found.`
+      });
+    }
+
     // Delete Tags
     const tags_repository = await getRepository(Tag);
     project.tags.forEach(async tag => {
@@ -129,8 +154,8 @@ projectRouter.delete('/project/:uuid', async function (req: Request, res: Respon
 
     await projectFileManagerInstance.DeleteProjectFiles(project);
     await repository.delete(project.uuid);
-    console.log((req as any).user.name + ': Delete project ' + req.params.uuid);
-    res.send(null);
+
+    return res.status(200).send(null);
   }
   catch (err) {
     return next(err);
@@ -138,7 +163,8 @@ projectRouter.delete('/project/:uuid', async function (req: Request, res: Respon
 });
 
 projectRouter.get('/project/:uuid/dataBatch', async function (req: Request, res: Response, next: NextFunction) {
-  console.log(`${(req as any).user.name} ': Get Project Data Batch ' + req.params.uuid`);
+  console.log(`${(req as any).user.name} ': Get Project Data Batch`);
+  console.log(req.body);
 
   try {
     const projectFileManagerInstance = Container.get(ProjectFileManagerService);
@@ -173,10 +199,11 @@ projectRouter.post('/project/:uuid/dataTag', async function (req: Request, res: 
           uuid: req.params.uuid,
       },
     });
-    const rowId = req.body.row;
-    const tag = req.body.tag;
+    const rowId : number = req.body.row;
+    const tag : string = req.body.tag;
 
     const result = await projectFileManagerInstance.UpdateTag(project, rowId, tag);
+    await repository.save(result);
 
     console.log((req as any).user.name + ': Update project data tag ' + req.params.id);
     res.send(result);

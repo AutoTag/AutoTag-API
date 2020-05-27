@@ -598,6 +598,9 @@ export default class ProjectFileManagerService {
     const tagsFilePath : string = projectDir + project.tagsLoc;
     let dataTags = await awsClientInstance.downloadFileAsList(tagsFilePath);
 
+    // DELETE
+    console.log(dataTags);
+
     // Update Data Tag
     dataTags[rowId] = tag;
 
@@ -609,14 +612,21 @@ export default class ProjectFileManagerService {
     }
     tagFileContents += dataTags[numRows - 1];
 
+    // DELETE
+    console.log(tagFileContents);
+
     const tagsContent = this.StringToBuffer(tagFileContents);
 
     // Upload Updated Data Tag File
     if(await awsClientInstance.tryUploadFile(tagsFilePath, tagsContent)) {
-      // TODO: Log success;
+      console.log(`Success, uploaded 'tagsContent' to ${tagsFilePath}.`);
+      console.log("tagsContent:");
+      console.log(tagsContent);
     }
     else {
-      // TODO: Log Failure;
+      console.error(`Error when uploading 'tagsContent' to ${tagsFilePath}.`);
+      console.log("tagsContent:");
+      console.log(tagsContent);
       return null;
     }
 
