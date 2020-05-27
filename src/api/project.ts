@@ -10,6 +10,8 @@ import { ProjectType, DataFormat } from '../services/ProjectFileManager';
 export const projectRouter: Router = Router();
 
 projectRouter.get('/project', async function (req: Request, res: Response, next: NextFunction) {
+  console.log((req as any).user.name + ': Get All Arojects');
+
   try {
     const repository = await getRepository(Project);
     const allProjects = await repository.find({ 
@@ -21,7 +23,6 @@ projectRouter.get('/project', async function (req: Request, res: Response, next:
           lastUpdate: "DESC",
       },
     });
-    console.log((req as any).user.name + ': Get all projects');
     console.log(allProjects);
     res.send(allProjects);
   }

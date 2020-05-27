@@ -369,9 +369,9 @@ export default class ProjectFileManagerService {
     return project;
   }
   
-  private async GetCSVDataBatch(project : Project, batchStart : number, batchSize : number) : Promise<[DataRow]> {
+  private async GetCSVDataBatch(project : Project, batchStart : number, batchSize : number) : Promise<DataRow[]> {
     let awsClientInstance = Container.get(AWSAccessorService);
-    let dataRows : [DataRow];
+    let dataRows : DataRow[];
 
     // Project Root Path
     const projectDir = `${project.owner.id}/${project.uuid}/`;
@@ -425,9 +425,9 @@ export default class ProjectFileManagerService {
     return dataRows;
   }
   
-  private async GetTXTDataBatch(project : Project, batchStart : number, batchSize : number) : Promise<[DataRow]> {
+  private async GetTXTDataBatch(project : Project, batchStart : number, batchSize : number) : Promise<DataRow[]> {
     let awsClientInstance = Container.get(AWSAccessorService);
-    let dataRows : [DataRow];
+    let dataRows : DataRow[];
 
     // Project Root Path
     const projectDir = `${project.owner.id}/${project.uuid}/`;
