@@ -388,7 +388,13 @@ export default class ProjectFileManagerService {
     const preTagsFilePath : string = projectDir + project.silverStandardLoc;
     let dataPreTags = await awsClientInstance.downloadFileAsList(preTagsFilePath);
 
-    for(let idx = batchStart; idx < batchSize; idx++){
+    // Validate Bounds
+    let batchEnd = batchStart + (batchSize - 1);
+    if(batchEnd >= project.numTotalRows){
+      batchEnd = project.numTotalRows - 1;
+    }
+
+    for(let idx = batchStart; idx <= batchEnd; idx++){
       let dataName = `Data Row ${idx}`;
       let rowId = idx;
       let content = dataContents[idx];
@@ -438,7 +444,13 @@ export default class ProjectFileManagerService {
     const preTagsFilePath : string = projectDir + project.silverStandardLoc;
     let dataPreTags = await awsClientInstance.downloadFileAsList(preTagsFilePath);
 
-    for(let idx = batchStart; idx < batchSize; idx++){
+    // Validate Bounds
+    let batchEnd = batchStart + (batchSize - 1);
+    if(batchEnd >= project.numTotalRows){
+      batchEnd = project.numTotalRows - 1;
+    }
+
+    for(let idx = batchStart; idx <= batchEnd; idx++){
       let dataName = dataFileNames[idx];
       let rowId = idx;
       let content = await awsClientInstance.downloadFileAsString(projectDir + dataFileNames[idx]);
