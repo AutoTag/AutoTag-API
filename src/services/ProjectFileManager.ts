@@ -4,6 +4,7 @@ import { Project } from '../model/project';
 import { User } from '../model/user';
 import { Tag } from '../model/tag';
 import config from '../config';
+import { stat } from 'fs';
 
 const https = require('https');
 
@@ -35,18 +36,18 @@ export enum Status {
 }
 
 class DataRow {
-  DataName : string;
-  RowId : number;
-  Content : string;
-  Status : string;
-  Tag : string;
+  dataName : string;
+  rowId : number;
+  content : string;
+  status : number;
+  tag : string;
 
-  constructor(DataName : string, RowId : number, Content : string, Status : string, Tag : string){
-    this.DataName = DataName;
-    this.RowId = RowId;
-    this.Content = Content;
-    this.Status = Status;
-    this.Tag = Tag;
+  constructor(dataName : string, rowId : number, content : string, status : number, tag : string){
+    this.dataName = dataName;
+    this.rowId = rowId;
+    this.content = content;
+    this.status = status;
+    this.tag = tag;
   }
 }
 
@@ -400,24 +401,24 @@ export default class ProjectFileManagerService {
       let content = dataContents[idx];
 
       let tag : string;
-      let status : string;
+      let status : Status;
 
       if(dataTags[idx] === DEFAULT_TAGS_ROW_CONTENTS)
       {
         if(dataPreTags[idx] === DEFAULT_TAGS_ROW_CONTENTS){
-          status = "NotTagged";
+          status = Status.NotTagged;
         }
         else{
           tag = dataPreTags[idx];
-          status = "PreTagged";
+          status = Status.PreTagged;
         }
       }
       else{
         tag = dataTags[idx];
-        status = "Tagged";
+        status = Status.Tagged;
       }
 
-      let newDataRow = new DataRow(dataName, rowId, content, tag, status);
+      let newDataRow = new DataRow(dataName, rowId, content, status, tag);
       dataRows.push(newDataRow);
 
     }
@@ -456,24 +457,24 @@ export default class ProjectFileManagerService {
       let content = await awsClientInstance.downloadFileAsString(projectDir + dataFileNames[idx]);
 
       let tag : string;
-      let status : string;
+      let status : Status;
 
       if(dataTags[idx] === DEFAULT_TAGS_ROW_CONTENTS)
       {
         if(dataPreTags[idx] === DEFAULT_TAGS_ROW_CONTENTS){
-          status = "NotTagged";
+          status = Status.NotTagged;
         }
         else{
           tag = dataPreTags[idx];
-          status = "PreTagged";
+          status = Status.PreTagged;
         }
       }
       else{
         tag = dataTags[idx];
-        status = "Tagged";
+        status = Status.Tagged;
       }
 
-      let newDataRow = new DataRow(dataName, rowId, content, tag, status);
+      let newDataRow = new DataRow(dataName, rowId, content, status, tag);
       dataRows.push(newDataRow);
 
     }
@@ -588,7 +589,7 @@ export default class ProjectFileManagerService {
    */
   public async UpdateTag(project : Project, rowId : number, tag : string) : Promise<Project> {
     let awsClientInstance = Container.get(AWSAccessorService);
-    let dataRows : [DataRow];
+    let dataRows : DataRow[] = [];
 
     // Project Root Path
     const projectDir = `${project.owner.id}/${project.uuid}/`;

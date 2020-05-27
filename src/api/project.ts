@@ -10,7 +10,7 @@ import { ProjectType, DataFormat } from '../services/ProjectFileManager';
 export const projectRouter: Router = Router();
 
 projectRouter.get('/project', async function (req: Request, res: Response, next: NextFunction) {
-  console.log((req as any).user.name + ': Get All Arojects');
+  console.log((req as any).user.name + ': Get All Projects');
 
   try {
     const repository = await getRepository(Project);
@@ -138,6 +138,8 @@ projectRouter.delete('/project/:uuid', async function (req: Request, res: Respon
 });
 
 projectRouter.get('/project/:uuid/dataBatch', async function (req: Request, res: Response, next: NextFunction) {
+  console.log(`${(req as any).user.name} ': Get Project Data Batch ' + req.params.uuid`);
+
   try {
     const projectFileManagerInstance = Container.get(ProjectFileManagerService);
     const repository = await getRepository(Project);
@@ -153,7 +155,6 @@ projectRouter.get('/project/:uuid/dataBatch', async function (req: Request, res:
 
     const dataBatch = await projectFileManagerInstance.GetDataBatch(project, offset, limit);
 
-    console.log((req as any).user.email + ': Get project data batch ' + req.params.uuid);
     res.send(dataBatch);
   }
   catch (err) {
