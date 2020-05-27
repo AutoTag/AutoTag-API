@@ -11,13 +11,14 @@ export default () => {
       region: config.aws_region
     }));
     
-    // TODO: Log successful dependency injection
+    console.log("Sucessful Dependency Injection - s3Client.");
     
     return { success : true };
   
   } catch (e) {
     
-    // TODO: Log error.    
+    console.error("Error Occurred While Injecting Dependencies.");
+    console.error(e);  
     throw e;
   }
 };

@@ -212,10 +212,14 @@ export default class ProjectFileManagerService {
     const fileContent = Buffer.from(file.content); // Parse into Buffer for Uploading
 
     if(await awsClientInstance.tryUploadFile(dataFilePath, fileContent)) {
-      // TODO: Log success;
+      console.log(`Success - Uploaded 'fileContent' to 'dataFilePath=${dataFilePath}'.`);
+      console.log("fileContent:");
+      console.log(fileContent);
     }
     else {
-      // TODO: Log Failure;
+      console.error(`Failure - Error While Uploading 'fileContent' to 'dataFilePath=${dataFilePath}'.`);
+      console.log("fileContent:");
+      console.log(fileContent);
       return null;
     }
 
@@ -237,10 +241,14 @@ export default class ProjectFileManagerService {
     // Upload Default Tag File
     const tagFilePath = projectDir + FILE_TAGS;
     if(await awsClientInstance.tryUploadFile(tagFilePath, tagsContent)) {
-      // TODO: Log success;
+      console.log(`Success - Uploaded 'tagsContent' to 'tagFilePath=${tagFilePath}'.`);
+      console.log("tagsContent:");
+      console.log(tagsContent);
     }
     else {
-      // TODO: Log Failure;
+      console.error(`Failure - Error While Uploading 'tagsContent' to 'tagFilePath=${tagFilePath}'.`);
+      console.log("fileContent:");
+      console.log(tagsContent);
       return null;
     }
 
@@ -251,10 +259,14 @@ export default class ProjectFileManagerService {
     // Upload Default Pre-Tags File
     const preTagsFilePath = projectDir + FILE_PRETAGS;
     if(await awsClientInstance.tryUploadFile(preTagsFilePath, tagsContent)) {
-      // TODO: Log success;
+      console.log(`Success - Uploaded 'tagsContent' to 'preTagsFilePath=${preTagsFilePath}'.`);
+      console.log("tagsContent:");
+      console.log(tagsContent);
     }
     else {
-      // TODO: Log Failure;
+      console.error(`Failure - Error While Uploading 'tagsContent' to 'preTagsFilePath=${preTagsFilePath}'.`);
+      console.log("fileContent:");
+      console.log(tagsContent);
       return null;
     }
 
@@ -296,10 +308,14 @@ export default class ProjectFileManagerService {
       const fileContent = Buffer.from(file.content);
 
       if(await awsClientInstance.tryUploadFile(dataFilePath, fileContent)) {
-        // TODO: Log success;
+        console.log(`Success - Uploaded 'fileContent' to 'dataFilePath=${dataFilePath}'.`);
+        console.log("fileContent:");
+        console.log(fileContent);
       }
       else {
-        // TODO: Log Failure;
+        console.error(`Failure - Error While Uploading 'fileContent' to 'dataFilePath=${dataFilePath}'.`);
+        console.log("fileContent:");
+        console.log(fileContent);
         return null;
       }
     });
@@ -323,10 +339,14 @@ export default class ProjectFileManagerService {
     const fileNamesContent = this.StringToBuffer(fileNamesString);
 
     if(await awsClientInstance.tryUploadFile(dataIndexFilePath, fileNamesContent)) {
-      // TODO: Log success;
+      console.log(`Success - Uploaded 'fileNamesContent' to 'dataIndexFilePath=${dataIndexFilePath}'.`);
+      console.log("fileNamesContent:");
+      console.log(fileNamesContent);
     }
     else {
-      // TODO: Log Failure;
+      console.error(`Failure - Error While Uploading 'fileNamesContent' to 'dataIndexFilePath=${dataIndexFilePath}'.`);
+      console.log("fileNamesContent:");
+      console.log(fileNamesContent);
       return null;
     }
 
@@ -339,10 +359,14 @@ export default class ProjectFileManagerService {
     const tagsContent = this.StringToBuffer(tags);
 
     if(await awsClientInstance.tryUploadFile(tagFilePath, tagsContent)) {
-      // TODO: Log success;
+      console.log(`Success - Uploaded 'tagsContent' to 'tagFilePath=${tagFilePath}'.`);
+      console.log("tagsContent:");
+      console.log(tagsContent);
     }
     else {
-      // TODO: Log Failure;
+      console.error(`Failure - Error While Uploading 'tagsContent' to 'tagFilePath=${tagFilePath}'.`);
+      console.log("tagsContent:");
+      console.log(tagsContent);
       return null;
     }
 
@@ -353,10 +377,14 @@ export default class ProjectFileManagerService {
     // Upload Default Pre-Tags File
     const preTagsFilePath = projectDir + FILE_PRETAGS;
     if(await awsClientInstance.tryUploadFile(preTagsFilePath, tagsContent)) {
-      // TODO: Log success;
+      console.log(`Success - Uploaded 'tagsContent' to 'preTagsFilePath=${preTagsFilePath}'.`);
+      console.log("tagsContent:");
+      console.log(tagsContent);
     }
     else {
-      // TODO: Log Failure;
+      console.error(`Failure - Error While Uploading 'tagsContent' to 'preTagsFilePath=${preTagsFilePath}'.`);
+      console.log("tagsContent:");
+      console.log(tagsContent);
       return null;
     }
 
@@ -498,7 +526,7 @@ export default class ProjectFileManagerService {
     project.owner = owner;
     project.description = description;
     project.type = projectType.valueOf();
-    project.projectDataFormat = this.DataFormatToText(dataFormat); // TODO: Project.projectDataFormat must be a number
+    project.projectDataFormat = dataFormat;
     project.tags = tags;
     project.status = Status.NotTagged;
 
@@ -514,9 +542,8 @@ export default class ProjectFileManagerService {
    * Returns Updated Object
    */
   public async SetProjectFiles(project : Project, files : any[]) : Promise<Project> {
-    console.log(project.projectDataFormat);
-    console.log(this.TextToDataFormat(project.projectDataFormat));
-    switch (this.TextToDataFormat(project.projectDataFormat)) {
+    console.log(this.DataFormatToText(project.projectDataFormat));
+    switch (project.projectDataFormat) {
       case DataFormat.CSV:
         return await this.SetCSVProjectFiles(project, files[0]);
 
@@ -539,10 +566,10 @@ export default class ProjectFileManagerService {
 
     try{
       if(await awsClientInstance.tryDeleteDirectory(projectDir)) {
-        // TODO: Log success;
+        console.log(`Successfuly Deleted Directory 'projectDir=${projectDir}'.`);
       }
       else {
-        // TODO: Log Failure;
+        console.log(`Error While Deleting Directory 'projectDir=${projectDir}'.`);
         throw new Error(`Files of Project 'project.uuid=${project.uuid}' were not deleted.`)
       }
     }
@@ -569,7 +596,7 @@ export default class ProjectFileManagerService {
    *    Tag - string : Existing Tag (null if NotTagged).
    */
   public async GetDataBatch(project : Project, batchStart : number, batchSize : number) : Promise<string> {
-    switch (this.TextToDataFormat(project.projectDataFormat)) {
+    switch (project.projectDataFormat) {
       case DataFormat.CSV:
         return JSON.stringify(await this.GetCSVDataBatch(project, batchStart, batchSize));
 
@@ -592,7 +619,7 @@ export default class ProjectFileManagerService {
       console.error(`'rowId=${rowId}' is out of bounds for total data limit of 'project.numTotalRows=${project.numTotalRows}'.`);
       return null;
     }
-    
+
     let awsClientInstance = Container.get(AWSAccessorService);
 
     // Project Root Path
@@ -601,9 +628,6 @@ export default class ProjectFileManagerService {
     // Get Tags File
     const tagsFilePath : string = projectDir + project.tagsLoc;
     let dataTags : string[] = await awsClientInstance.downloadFileAsList(tagsFilePath);
-
-    // DELETE
-    console.log(dataTags);
 
     // Update Data Tag
     dataTags[rowId] = tag;
@@ -616,19 +640,16 @@ export default class ProjectFileManagerService {
     }
     tagFileContents += dataTags[numRows - 1];
 
-    // DELETE
-    console.log(tagFileContents);
-
     const tagsContent = this.StringToBuffer(tagFileContents);
 
     // Upload Updated Data Tag File
     if(await awsClientInstance.tryUploadFile(tagsFilePath, tagsContent)) {
-      console.log(`Success, uploaded 'tagsContent' to ${tagsFilePath}.`);
+      console.log(`Success - Uploaded 'tagsContent' to 'tagsFilePath=${tagsFilePath}'.`);
       console.log("tagsContent:");
       console.log(tagsContent);
     }
     else {
-      console.error(`Error when uploading 'tagsContent' to ${tagsFilePath}.`);
+      console.error(`Failure - Error While Uploading 'tagsContent' to 'tagsFilePath=${tagsFilePath}'.`);
       console.log("tagsContent:");
       console.log(tagsContent);
       return null;
@@ -670,7 +691,7 @@ export default class ProjectFileManagerService {
     // requiredFields = ['userId', 'projectId', 'fileType', 'projectType', 'dataFile', 'tagsFile']
     let userId = project.owner.id.toString();
     let projectId = project.uuid;
-    let fileType = project.projectDataFormat;
+    let fileType = this.DataFormatToText(project.projectDataFormat);
     let projectType = this.ProjectTypeToText(project.type);
     let dataFile = project.projectDataLoc;
     let tagsFile = project.tagsLoc;
@@ -692,6 +713,9 @@ export default class ProjectFileManagerService {
       method : 'POST'
     };
 
+    console.log("Sending Pre-Tagging Request.");
+    console.log(options);
+    console.log(params);
     let response : JSON;
 
     const req = https.request(options, (res) => {
@@ -708,8 +732,7 @@ export default class ProjectFileManagerService {
         console.log(`Body: ${response}`);
       });
     }).on('error', (err) => {
-      // TODO: Log error
-      console.log("Error: ", err.message);
+      console.error("Error: ", err);
       return null;
     });
 

@@ -208,7 +208,6 @@ projectRouter.post('/project/:uuid/dataTag', async function (req: Request, res: 
     const result = await projectFileManagerInstance.UpdateTag(project, rowId, tag);
     await repository.save(result);
 
-    console.log((req as any).user.name + ': Update project data tag ' + req.params.id);
     res.send(result);
   }
   catch (err) {

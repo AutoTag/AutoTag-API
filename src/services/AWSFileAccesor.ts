@@ -42,12 +42,12 @@ export default class AWSAccessorService {
     try {
       resp = await getObject(filePath);
     } catch (err) {
-      // TODO: Log Error
+      console.error(`Error Retrieving Object from 'filePath=${filePath}'`);
       console.error(err);
       return [false, null];
     }
 
-    // TODO: Log Success.
+    console.log(`Success Retrieving Object from 'filePath=${filePath}'.`);
     return [true, resp];
   }
 
@@ -149,17 +149,18 @@ export default class AWSAccessorService {
 
     try {
       const deletedObjects = await deleteObjects(objsToDelete);
-      console.log("Deleted Objects");
+      console.log(`Success Deleting Objects: `);
       deletedObjects.forEach(obj => {
         console.log(obj);
       });
     }
     catch(err){
+      console.log(`Error Occurred While Deleting Objects.`);
       console.error(err);
       return false;
     }
 
-    // TODO: Log success.
+    console.log(`Success Deleting Directory 'directory=${directory}'.`);
     return true;
   }
 
@@ -178,7 +179,7 @@ export default class AWSAccessorService {
 
     await this.tryDownloadStream(filePath).then(([success, stream]) => {
       if (!success) {
-        // TODO: Log Error
+        console.error(`Error While Trying to Download Stream from 'filePath=${filePath}'.`);
         return null;
       }
 
@@ -190,7 +191,7 @@ export default class AWSAccessorService {
       return null;
     });
 
-    // TODO: Log Success.
+    console.log(`Successfuly Downloaded Files As String from 'filePath=${filePath}'.`);
     return fileContent;
   }
 
@@ -209,7 +210,7 @@ export default class AWSAccessorService {
 
     await this.tryDownloadStream(filePath).then(([success, stream]) => {
       if (!success) {
-        // TODO: Log Error
+        console.error(`Error While Trying to Download Stream from 'filePath=${filePath}'.`);
         return null;
       }
 
@@ -222,7 +223,7 @@ export default class AWSAccessorService {
       return null;
     });
 
-    // TODO: Log Success.
+    console.log(`Successfuly Downloaded Files As List from 'filePath=${filePath}'.`);
     return fileContent;
   }
 }

@@ -21,7 +21,7 @@ export class Project {
   dataFormat: string = "";
 
   @Column()
-  projectDataFormat: string = "";
+  projectDataFormat: number = 0;
 
   @Column()
   projectDataLoc: string = "";
