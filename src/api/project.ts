@@ -34,7 +34,7 @@ projectRouter.get('/project/:uuid', async function (req: Request, res: Response,
   try {
     const repository = await getRepository(Project);
     const project = await repository.findOne({ 
-      relations: ["owner"],
+      relations: ["owner", "tags"],
       where: {
           owner: { id: (req as any).user.id }, 
           uuid: req.params.uuid,
@@ -90,7 +90,7 @@ projectRouter.post('/project/:uuid', async function (req: Request, res: Response
   try {
     const repository = await getRepository(Project);
     const project = await repository.findOne({ 
-      relations: ["owner"],
+      relations: ["owner", "tags"],
       where: {
           owner: { id: (req as any).user.id }, 
           uuid: req.params.uuid,
@@ -141,7 +141,7 @@ projectRouter.get('/project/:uuid/dataBatch', async function (req: Request, res:
     const projectFileManagerInstance = Container.get(ProjectFileManagerService);
     const repository = await getRepository(Project);
     const project = await repository.findOne({ 
-      relations: ["owner"],
+      relations: ["owner", "tags"],
       where: {
           owner: { id: (req as any).user.id }, 
           uuid: req.params.uuid,
@@ -165,7 +165,7 @@ projectRouter.post('/project/:uuid/dataTag', async function (req: Request, res: 
     const projectFileManagerInstance = Container.get(ProjectFileManagerService);
     const repository = await getRepository(Project);
     const project = await repository.findOne({ 
-      relations: ["owner"],
+      relations: ["owner", "tags"],
       where: {
           owner: { id: (req as any).user.id }, 
           uuid: req.params.uuid,
@@ -189,7 +189,7 @@ projectRouter.post('/project/:uuid/generate', async function (req: Request, res:
     const projectFileManagerInstance = Container.get(ProjectFileManagerService);
     const repository = await getRepository(Project);
     const project = await repository.findOne({
-      relations: ["owner"],
+      relations: ["owner", "tags"],
       where: {
           owner: { id: (req as any).user.id }, 
           uuid: req.params.uuid,
