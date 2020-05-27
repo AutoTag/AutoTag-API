@@ -38,6 +38,12 @@ export class Project {
   @Column()
   status: number = 0;
 
+  @Column()
+  numTaggedRows: number = 0;
+
+  @Column()
+  numTotalRows: number = 0;
+
   @CreateDateColumn()
   created: Date;
 

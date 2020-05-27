@@ -260,7 +260,10 @@ export default class ProjectFileManagerService {
     // Set the project's Pre-Tags Locatiion
     project.silverStandardLoc = FILE_PRETAGS;
 
-    // awsClientInstance.tryUploadFile()
+
+    // Set Project Data Row Count
+    project.numTaggedRows = 0;
+    project.numTotalRows = numRows;
 
     return project;
   }
@@ -358,6 +361,10 @@ export default class ProjectFileManagerService {
 
     // Set the project's Pre-Tags Location
     project.silverStandardLoc = FILE_PRETAGS;
+
+    // Set Project Data Row Count
+    project.numTaggedRows = 0;
+    project.numTotalRows = numFiles;
 
     return project;
   }
@@ -602,9 +609,14 @@ export default class ProjectFileManagerService {
 
     // See if project is fully tagged
     let isFinished = true;
+    let numTaggedRows = 0;
+
     dataTags.forEach(tag => {
       if(tag === DEFAULT_TAGS_ROW_CONTENTS){
         isFinished = false;
+      }
+      else{
+        numTaggedRows++;
       }
     })
     
@@ -613,6 +625,8 @@ export default class ProjectFileManagerService {
     if(isFinished){
       project.status = Status.Tagged;
     }
+
+    project.numTaggedRows = numTaggedRows;
 
     return project;
   }
