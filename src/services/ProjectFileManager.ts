@@ -520,21 +520,10 @@ export default class ProjectFileManagerService {
     // Project Root Path
     const projectDir = `${project.owner.id}/${project.uuid}/`;
 
-
-    // Get Data File - Names
-    const dataFilePath : string = projectDir + project.projectDataLoc;
-    let dataFileNames = await awsClientInstance.downloadFileAsList(dataFilePath);
-    console.log(`Downloaded tag files from AWS - ${dataFilePath}.`);
-    
     // Get Tags File
     const tagsFilePath : string = projectDir + project.tagsLoc;
-    let dataTags = await awsClientInstance.downloadFileAsList(tagsFilePath);
+    let dataTagsContent = await awsClientInstance.downloadFileAsString(tagsFilePath);
     console.log(`Downloaded tag files from AWS - ${tagsFilePath}.`);
-
-    let dataTagsContent = "FILE,TAG";
-    for(let it = 0; it < project.numTotalRows; it++){
-      dataTagsContent += `\n${dataFileNames[it]},${dataTags}`;
-    }
 
     // Download Into TEMP Dir
     const tempTagsFilePath = TEMP_EXPORT_DIR + '/' + `${project.owner.id}_${project.uuid}_${project.tagsLoc}`;
@@ -550,10 +539,21 @@ export default class ProjectFileManagerService {
     // Project Root Path
     const projectDir = `${project.owner.id}/${project.uuid}/`;
 
+
+    // Get Data File - Names
+    const dataFilePath : string = projectDir + project.projectDataLoc;
+    let dataFileNames = await awsClientInstance.downloadFileAsList(dataFilePath);
+    console.log(`Downloaded tag files from AWS - ${dataFilePath}.`);
+    
     // Get Tags File
     const tagsFilePath : string = projectDir + project.tagsLoc;
-    let dataTagsContent = await awsClientInstance.downloadFileAsString(tagsFilePath);
+    let dataTags = await awsClientInstance.downloadFileAsList(tagsFilePath);
     console.log(`Downloaded tag files from AWS - ${tagsFilePath}.`);
+
+    let dataTagsContent = "FILE,TAG";
+    for(let it = 0; it < project.numTotalRows; it++){
+      dataTagsContent += `\n${dataFileNames[it]},${dataTags[it]}`;
+    }
 
     // Download Into TEMP Dir
     const tempTagsFilePath = TEMP_EXPORT_DIR + '/' + `${project.owner.id}_${project.uuid}_${project.tagsLoc}`;
