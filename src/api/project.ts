@@ -253,7 +253,9 @@ projectRouter.get('/project/:uuid/export', async function (req: Request, res: Re
 
     const exportTagsFile = await projectFileManagerInstance.ExportProject(project);
 
-    return res.download(exportTagsFile);
+    return res.status(200).send({
+      tagsContent : exportTagsFile
+    });
   }
   catch (err) {
     return next(err);
