@@ -760,6 +760,7 @@ export default class ProjectFileManagerService {
 
     const options = {
       hostname : config.preTagger_api_host,
+      port : config.preTagger_api_port,
       path : "/PreTagger/api/v0.1/Label",
       method : 'POST'
     };
