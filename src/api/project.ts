@@ -216,6 +216,8 @@ projectRouter.post('/project/:uuid/dataTag', async function (req: Request, res: 
 });
 
 projectRouter.post('/project/:uuid/generate', async function (req: Request, res: Response, next: NextFunction) {
+  console.log((req as any).user.name + ': Generate project pre tags ' + req.params.id);
+
   try {
     const projectFileManagerInstance = Container.get(ProjectFileManagerService);
     const repository = await getRepository(Project);
@@ -228,8 +230,6 @@ projectRouter.post('/project/:uuid/generate', async function (req: Request, res:
     });
 
     const result = await projectFileManagerInstance.GenerateProjectPreTags(project);
-
-    console.log((req as any).user.name + ': Generate project pre tags ' + req.params.id);
     res.send(result);
   }
   catch (err) {
@@ -238,14 +238,26 @@ projectRouter.post('/project/:uuid/generate', async function (req: Request, res:
 });
 
 projectRouter.get('/project/:uuid/export', async function (req: Request, res: Response, next: NextFunction) {
+  console.log((req as any).user.name + ': Export project ' + req.params.uuid);
+
   try {
-    // TODO: Implement request
-    console.log((req as any).user.email + ': Export project ' + req.params.uuid);
-    res.send(null);
+    const projectFileManagerInstance = Container.get(ProjectFileManagerService);
+    const repository = await getRepository(Project);
+    const project = await repository.findOne({
+      relations: ["owner", "tags"],
+      where: {
+          owner: { id: (req as any).user.id }, 
+          uuid: req.params.uuid,
+      },
+    });
+
+    const exportTagsFile = await projectFileManagerInstance.ExportProject(project);
+
+    return res.download(exportTagsFile);
   }
   catch (err) {
     return next(err);
-  }
+  };
 });
 
 projectRouter.get('/project/:uuid/download', async function (req: Request, res: Response, next: NextFunction) {
