@@ -24,6 +24,7 @@ export async function getRepository<Entity>(target: ObjectType<Entity>): Promise
       connection = await createConnection({
         type: 'postgres',
         url: config.db_url,
+        synchronize: true,
         entities: ENTITIES,
         extra: {
               ssl: true
