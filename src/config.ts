@@ -3,7 +3,7 @@ export default {
   /*
     Server Stuff
   */
-  port: process.env.PORT || 4201,
+  port: process.env.POST || 4201,
 
   /*
     Pre-Tagged API
@@ -25,5 +25,11 @@ export default {
     FACEBOOK API KEYS
   */
   facebook_api_key: process.env.FACEBOOK_API_KEY || "Wouldn't you like to know, weather boy.",
-  facebook_api_secret: process.env.FACEBOOK_API_SECRET || "Wouldn't you like to know, weather boy."
+  facebook_api_secret: process.env.FACEBOOK_API_SECRET || "Wouldn't you like to know, weather boy.",
+
+  /*
+    DB
+  */
+  db_type: process.env.DATABASE_TYPE || "sqlite",
+  db_url: process.env.DATABASE_URL || "",
 }
