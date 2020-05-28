@@ -4,7 +4,7 @@ import { Assignment } from './assignment';
 
 @Entity()
 export class User {
-  @PrimaryColumn()
+  @PrimaryColumn({ type: "bigint" })
   id: number;
 
   @CreateDateColumn()
