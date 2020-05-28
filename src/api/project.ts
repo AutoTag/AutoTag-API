@@ -163,7 +163,7 @@ projectRouter.delete('/project/:uuid', async function (req: Request, res: Respon
 });
 
 projectRouter.get('/project/:uuid/dataBatch', async function (req: Request, res: Response, next: NextFunction) {
-  console.log(`${(req as any).user.name} ': Get Project Data Batch`);
+  console.log(`${(req as any).user.name} ': Get Project Data Batch - Project 'uuid=${req.params.uuid}'.`);
   console.log(req.body);
 
   try {

@@ -708,7 +708,6 @@ export default class ProjectFileManagerService {
 
     const options = {
       hostname : config.preTagger_api_host,
-      port : config.preTagger_api_port,
       path : "/PreTagger/api/v0.1/Label",
       method : 'POST'
     };
@@ -718,7 +717,7 @@ export default class ProjectFileManagerService {
     console.log(params);
     let response : JSON;
 
-    const req = https.request(options, (res) => {
+    return https.request(options, (res) => {
       let data = '';
 
       console.log(`Status Code: ${res.statusCode}`);
@@ -730,18 +729,16 @@ export default class ProjectFileManagerService {
       res.on('end', () => {
         response = JSON.parse(data);
         console.log(`Body: ${response}`);
+
+        project.silverStandardLoc = response['silver_standard'];
+        project.status = Status.PreTagged;
+
+        return project;
       });
+
     }).on('error', (err) => {
       console.error("Error: ", err);
       return null;
     });
-
-    req.write(params);
-    req.end();
-
-    // Return Updated Project
-    project.silverStandardLoc = response['silver_standard'];
-    project.status = Status.PreTagged;
-    return project;
   }
 }
