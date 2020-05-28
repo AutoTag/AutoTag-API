@@ -525,12 +525,15 @@ export default class ProjectFileManagerService {
     let dataTagsContent = await awsClientInstance.downloadFileAsString(tagsFilePath);
     console.log(`Downloaded tag files from AWS - ${tagsFilePath}.`);
 
+    // TODO - Download contents into temp file and send to client.
+    /*
     // Download Into TEMP Dir
     const tempTagsFilePath = TEMP_EXPORT_DIR + '/' + `${project.owner.id}_${project.uuid}_${project.tagsLoc}`;
     fs.writeFileSync(tempTagsFilePath, dataTagsContent);
     console.log(`Wrote tag files into temp dir - ${tempTagsFilePath}.`);
+    */
 
-    return tempTagsFilePath;
+    return dataTagsContent;
   }
 
   private async ExportTXTProject(project : Project) : Promise<string> {
@@ -555,12 +558,15 @@ export default class ProjectFileManagerService {
       dataTagsContent += `\n${dataFileNames[it]},${dataTags[it]}`;
     }
 
+    // TODO - Download contents into temp file and send to client.
+    /*
     // Download Into TEMP Dir
     const tempTagsFilePath = TEMP_EXPORT_DIR + '/' + `${project.owner.id}_${project.uuid}_${project.tagsLoc}`;
     fs.writeFileSync(tempTagsFilePath, dataTagsContent);
     console.log(`Wrote tag files into temp dir - ${tempTagsFilePath}.`);
+    */
 
-    return tempTagsFilePath;
+    return dataTagsContent;
   }
  
 
@@ -760,9 +766,12 @@ export default class ProjectFileManagerService {
 
     const options = {
       hostname : config.preTagger_api_host,
-      port : config.preTagger_api_port,
-      path : "/PreTagger/api/v0.1/Label",
-      method : 'POST'
+      path : "/PreTagger/api/v0.1/Label/",
+      method : 'POST',
+      headers : {
+        'Content-Type': 'application/json',
+        'Content-Length': params.length
+      }
     };
 
     console.log("Sending Pre-Tagging Request.");
@@ -770,7 +779,7 @@ export default class ProjectFileManagerService {
     console.log(params);
     let response : JSON;
 
-    return https.request(options, (res) => {
+    let req = https.request(options, (res) => {
       let data = '';
 
       console.log(`Status Code: ${res.statusCode}`);
@@ -794,6 +803,9 @@ export default class ProjectFileManagerService {
       console.error("Error: ", err);
       return null;
     });
+
+    req.write(params);
+    return req.end();
   }
 
   /**
