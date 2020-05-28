@@ -3,7 +3,7 @@ export default {
   /*
     Server Stuff
   */
-  port: process.env.POST || 4201,
+  port: process.env.PORT || 4201,
 
   /*
     Pre-Tagged API
