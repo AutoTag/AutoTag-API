@@ -7,6 +7,7 @@ import config from '../config';
 import { stat } from 'fs';
 
 const https = require('https');
+const fs = require('fs');
 
 // Default File Contents:
 const DEFAULT_DATA_ROW_CONTENTS = "NO_DATA";
@@ -16,6 +17,9 @@ const DEFAULT_TAGS_ROW_CONTENTS = "NO_LABEL";
 const FILE_TAGS = "tags.csv";
 const FILE_PRETAGS = "silver_standard.csv";
 const FILE_DATA_INDEX = "data_index.csv";
+
+// Local Files for Caching:
+const TEMP_EXPORT_DIR = "./tmp";
 
 export enum ProjectType {
   SentimentAnalysis = 0,
@@ -509,6 +513,55 @@ export default class ProjectFileManagerService {
 
     return dataRows;
   }
+
+  private async ExportCSVProject(project : Project) : Promise<string> {
+    let awsClientInstance = Container.get(AWSAccessorService);
+
+    // Project Root Path
+    const projectDir = `${project.owner.id}/${project.uuid}/`;
+
+
+    // Get Data File - Names
+    const dataFilePath : string = projectDir + project.projectDataLoc;
+    let dataFileNames = await awsClientInstance.downloadFileAsList(dataFilePath);
+    console.log(`Downloaded tag files from AWS - ${dataFilePath}.`);
+    
+    // Get Tags File
+    const tagsFilePath : string = projectDir + project.tagsLoc;
+    let dataTags = await awsClientInstance.downloadFileAsList(tagsFilePath);
+    console.log(`Downloaded tag files from AWS - ${tagsFilePath}.`);
+
+    let dataTagsContent = "FILE,TAG";
+    for(let it = 0; it < project.numTotalRows; it++){
+      dataTagsContent += `\n${dataFileNames[it]},${dataTags}`;
+    }
+
+    // Download Into TEMP Dir
+    const tempTagsFilePath = TEMP_EXPORT_DIR + '/' + projectDir;
+    fs.writeFileSync(tempTagsFilePath, dataTagsContent);
+    console.log(`Wrote tag files into temp dir - ${tempTagsFilePath}.`);
+
+    return tempTagsFilePath;
+  }
+
+  private async ExportTXTProject(project : Project) : Promise<string> {
+    let awsClientInstance = Container.get(AWSAccessorService);
+
+    // Project Root Path
+    const projectDir = `${project.owner.id}/${project.uuid}/`;
+
+    // Get Tags File
+    const tagsFilePath : string = projectDir + project.tagsLoc;
+    let dataTagsContent = await awsClientInstance.downloadFileAsString(tagsFilePath);
+    console.log(`Downloaded tag files from AWS - ${tagsFilePath}.`);
+
+    // Download Into TEMP Dir
+    const tempTagsFilePath = TEMP_EXPORT_DIR + '/' + projectDir;
+    fs.writeFileSync(tempTagsFilePath, dataTagsContent);
+    console.log(`Wrote tag files into temp dir - ${tempTagsFilePath}.`);
+
+    return tempTagsFilePath;
+  }
  
 
   /**
@@ -708,7 +761,6 @@ export default class ProjectFileManagerService {
 
     const options = {
       hostname : config.preTagger_api_host,
-      port : config.preTagger_api_port,
       path : "/PreTagger/api/v0.1/Label",
       method : 'POST'
     };
@@ -718,7 +770,7 @@ export default class ProjectFileManagerService {
     console.log(params);
     let response : JSON;
 
-    const req = https.request(options, (res) => {
+    return https.request(options, (res) => {
       let data = '';
 
       console.log(`Status Code: ${res.statusCode}`);
@@ -730,18 +782,32 @@ export default class ProjectFileManagerService {
       res.on('end', () => {
         response = JSON.parse(data);
         console.log(`Body: ${response}`);
+
+        project.silverStandardLoc = response['silver_standard'];
+        project.status = Status.PreTagged;
+
+        return project;
       });
+
     }).on('error', (err) => {
       console.error("Error: ", err);
       return null;
     });
+  }
 
-    req.write(params);
-    req.end();
+  /**
+   * ExportProject
+   */
+  public async ExportProject(project : Project) : Promise<string> {
+    switch (project.projectDataFormat) {
+      case DataFormat.CSV:
+        return await this.ExportCSVProject(project);
 
-    // Return Updated Project
-    project.silverStandardLoc = response['silver_standard'];
-    project.status = Status.PreTagged;
-    return project;
+      case DataFormat.TXT:
+        return await this.ExportTXTProject(project);
+    
+      default:
+        return null;
+    }
   }
 }
