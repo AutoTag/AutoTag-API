@@ -205,10 +205,19 @@ projectRouter.post('/project/:uuid/dataTag', async function (req: Request, res: 
     const rowId : number = req.body.rowId;
     const tag : string = req.body.tag;
 
-    const result = await projectFileManagerInstance.UpdateTag(project, rowId, tag);
-    await repository.save(result);
+    const updatedProject = await projectFileManagerInstance.UpdateTag(project, rowId, tag);
+    await repository.save(updatedProject);
 
-    res.send(result);
+    // Get Updated Project with Populated Fields
+    const result = await repository.findOne({ 
+      relations: ["owner", "tags"],
+      where: {
+          owner: { id: (req as any).user.id }, 
+          uuid: req.params.uuid,
+      },
+    });
+
+    res.status(200).send(result);
   }
   catch (err) {
     return next(err);
