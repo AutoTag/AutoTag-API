@@ -217,7 +217,7 @@ projectRouter.post('/project/:uuid/dataTag', async function (req: Request, res: 
       },
     });
 
-    res.status(201).send(result);
+    return res.status(201).send(result);
   }
   catch (err) {
     return next(err);
