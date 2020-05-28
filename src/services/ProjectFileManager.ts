@@ -537,7 +537,7 @@ export default class ProjectFileManagerService {
     }
 
     // Download Into TEMP Dir
-    const tempTagsFilePath = TEMP_EXPORT_DIR + '/' + projectDir;
+    const tempTagsFilePath = TEMP_EXPORT_DIR + '/' + tagsFilePath;
     fs.writeFileSync(tempTagsFilePath, dataTagsContent);
     console.log(`Wrote tag files into temp dir - ${tempTagsFilePath}.`);
 
@@ -556,7 +556,7 @@ export default class ProjectFileManagerService {
     console.log(`Downloaded tag files from AWS - ${tagsFilePath}.`);
 
     // Download Into TEMP Dir
-    const tempTagsFilePath = TEMP_EXPORT_DIR + '/' + projectDir;
+    const tempTagsFilePath = TEMP_EXPORT_DIR + '/' + tagsFilePath;
     fs.writeFileSync(tempTagsFilePath, dataTagsContent);
     console.log(`Wrote tag files into temp dir - ${tempTagsFilePath}.`);
 
@@ -722,7 +722,6 @@ export default class ProjectFileManagerService {
     });
     
     // Update Project Status
-    project.lastUpdate = new Date();
     if(isFinished){
       project.status = Status.Tagged;
     }
@@ -780,6 +779,7 @@ export default class ProjectFileManagerService {
       });
 
       res.on('end', () => {
+        console.log(data);
         response = JSON.parse(data);
         console.log(`Body: ${response}`);
 

@@ -216,7 +216,7 @@ projectRouter.post('/project/:uuid/dataTag', async function (req: Request, res: 
 });
 
 projectRouter.post('/project/:uuid/generate', async function (req: Request, res: Response, next: NextFunction) {
-  console.log((req as any).user.name + ': Generate project pre tags ' + req.params.id);
+  console.log((req as any).user.name + ': Generate project pre tags ' + req.params.uuid);
 
   try {
     const projectFileManagerInstance = Container.get(ProjectFileManagerService);
