@@ -19,7 +19,7 @@ const FILE_PRETAGS = "silver_standard.csv";
 const FILE_DATA_INDEX = "data_index.csv";
 
 // Local Files for Caching:
-const TEMP_EXPORT_DIR = "./tmp";
+const TEMP_EXPORT_DIR = `${__dirname}/tmp`;
 
 export enum ProjectType {
   SentimentAnalysis = 0,
